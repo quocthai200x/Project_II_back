@@ -5,6 +5,7 @@ const CLIENT_ID = process.env.CLIENT_ID_IMGUR
 async function uploadImage(req, res, next) {
   try {
     let base64Code = req.body.source
+    // console.log(base64Code);
     // const api = "https://freeimage.host/api/1/upload"
     const api = "https://api.imgur.com/3/image"
     const options = {
