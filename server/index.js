@@ -1,5 +1,7 @@
 require('dotenv').config()
 require("./connect-mongo");
+const { instrument } = require("@socket.io/admin-ui");
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
@@ -22,6 +24,8 @@ app.use(express.static('public'))
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
+
+
 app.use(bodyParser.json({
   extended: true,
   limit: '50mb'
@@ -30,10 +34,17 @@ app.use(bodyParser.json({
 
 
 app.use(cors({
-  origin: ["http://localhost:3000"],
+  origin: ["http://localhost:3000",'http://192.168.56.1:3000/', "https://admin.socket.io"],
   credentials: true
 }
 ))
+
+
+console.log(io);
+
+instrument(io, {
+  auth: false
+});
 
 app.use(
   session({
@@ -61,10 +72,10 @@ server.listen(port, (err) => {
 let onlineUsers = {}
 
 io.on('connection', function (socket) { // socket = 1 session of user A
-  // console.log(socket.id + ": connected");
+  console.log(socket.id + ": connected");
 
   socket.on("disconnect", function () {
-    // console.log(socket.id + ": disconnected");
+    console.log(socket.id + ": disconnected");
     if (socket.hasOwnProperty("matchesIds")) {
       loop1:
       for (let matchId of socket.matchesIds) { // loop thru Ids of matches of user A
@@ -82,13 +93,14 @@ io.on('connection', function (socket) { // socket = 1 session of user A
   })
 
   socket.on("online", function (userId, matchesIds) {
-    // console.log(matchesIds)
+    console.log(matchesIds)
     socket.matchesIds = matchesIds // array
     let userData = {
       _id: userId
     }
     onlineUsers[socket.id] = userData // save to list ALL online users
 
+    console.log(JSON.stringify(onlineUsers));
     let myOnlineMatches = [] // init online matches Object of userA
     loop1:
     for (let matchId of socket.matchesIds) { // loop thru Ids of matches of user A
