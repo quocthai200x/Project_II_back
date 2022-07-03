@@ -11,6 +11,12 @@ const schema = new mongoose.Schema({
     required: true,
     ref: 'users'
   }],
+
+  lastModify:{
+    type: String, 
+    required: true,
+    default: new Date().toISOString(),
+  },
   usersRead: [{
     userId: {
       type: String,

@@ -1,6 +1,6 @@
 require('dotenv').config()
-require("./connect-mongo");
-const { instrument } = require("@socket.io/admin-ui");
+require("./server/connect-mongo");
+// const { instrument } = require("@socket.io/admin-ui");
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -8,13 +8,13 @@ const session = require("express-session");
 const path = require("path");
 const cors = require('cors')
 
-const router = require("./router");
-const template = require("./modules/template");
+const router = require("./server/router");
+const template = require("./server/modules/template");
 
 const {
   readTokenMiddleware,
   authenticatedMiddleware,
-} = require("./modules/auth");
+} = require("./server/modules/auth");
 
 const app = express();
 const port = process.env.PORT || 9000;
@@ -22,7 +22,7 @@ const port = process.env.PORT || 9000;
 app.use(express.static('public'))
 
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+
 
 
 
@@ -40,28 +40,28 @@ app.use(cors({
 ))
 
 
-console.log(io);
+// console.log(io);
 
-instrument(io, {
-  auth: false
-});
-
-app.use(
-  session({
-    secret: process.env.SECRET_STRING,
-    resave: false,
-    saveUninitialized: false,
-    cookie: { maxAge: 12 * 60 * 60 }, //12 hours
-  })
-);
-app.use(readTokenMiddleware);
-app.use(router);
-app.use((err, req, res, next) => {
-  if (err)
-    res.json(template.failedRes(err.message));
-});
-
-app.get('*', (req, res) => {
+// instrument(io, {
+  //   auth: false
+  // });
+  
+  app.use(
+    session({
+      secret: process.env.SECRET_STRING,
+      resave: false,
+      saveUninitialized: false,
+      cookie: { maxAge: 12 * 60 * 60 }, //12 hours
+    })
+    );
+    app.use(readTokenMiddleware);
+    app.use(router);
+    app.use((err, req, res, next) => {
+      if (err)
+      res.json(template.failedRes(err.message));
+    });
+    
+    app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
@@ -71,8 +71,10 @@ server.listen(port, (err) => {
 
 let onlineUsers = {}
 
+const io = require('socket.io')(server, {cors: {origin: "*"}});
 io.on('connection', function (socket) { // socket = 1 session of user A
   console.log(socket.id + ": connected");
+  socket.on('reply', () => { console.log("a reply detected!")}); // listen to the event
 
   socket.on("disconnect", function () {
     console.log(socket.id + ": disconnected");
@@ -95,6 +97,9 @@ io.on('connection', function (socket) { // socket = 1 session of user A
   socket.on("online", function (userId, matchesIds) {
     console.log(matchesIds)
     socket.matchesIds = matchesIds // array
+    if(!matchesIds){
+      socket.matchesIds = [];
+    }
     let userData = {
       _id: userId
     }

@@ -27,6 +27,7 @@ const schema = new mongoose.Schema({
     },
     birthdate: {
       type: String,
+      default: new Date().toISOString(),
       required: true,
     },
     gender: {

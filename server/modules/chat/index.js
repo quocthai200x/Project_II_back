@@ -17,9 +17,9 @@ const chatHandler = {
 
       let list = await chatModel.find(
         {users: {$all: [userId]}}, 
-        {_id: 1, users: 1, createdAt: 1, messages: {$slice: pageSizeMess}, usersRead: 1}
+        {_id: 1, users: 1, createdAt: 1, messages: {$slice: pageSizeMess}, usersRead: 1, lastModify: 1}
       )
-      .skip(skip).limit(limit).sort({createdAt: 'desc'})
+      .skip(skip).limit(limit).sort({lastModify: 'desc'})
       .populate({
         path: 'users',
         match: { _id: { $ne: userId } },
@@ -60,7 +60,8 @@ const chatHandler = {
           usersRead: [
             {userId: userId, read: true},
             {userId: matchId, read: false}
-          ]
+          ],
+          lastModify: new Date().toISOString(),
         },
         {
           fields: {_id: 1, users: 1, createdAt: 1, messages: {$slice: 1}},
