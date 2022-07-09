@@ -27,5 +27,8 @@
     "nodemon": "^2.0.18",
     "request": "^2.88.2",
     "socket.io": "^4.5.1"
+  },
+  "devDependencies": {
+    "gh-pages": "^4.0.0"
   }
 }
