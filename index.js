@@ -34,7 +34,7 @@ app.use(bodyParser.json({
 
 
 app.use(cors({
-  origin: ["http://localhost:3000",'http://192.168.56.1:3000/', "https://admin.socket.io"],
+  origin: ["http://localhost:3000","https://project-ii-front.netlify.app"],
   credentials: true
 }
 ))
