@@ -61,13 +61,18 @@ app.use(cors({
       res.json(template.failedRes(err.message));
     });
     
-    app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
+//     app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../public/index.html'));
+// }
+// );
 
 server.listen(port, (err) => {
   console.log(err || `Server opened at port '${port}'`);
 });
+
+app.get('/', function(req, res, next){
+  res.send('<h1>Đã kết nối</h1>')
+})
 
 let onlineUsers = {}
 
