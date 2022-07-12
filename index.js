@@ -34,7 +34,7 @@ app.use(bodyParser.json({
 
 
 app.use(cors({
-  origin: ["http://localhost:3000","https://project-ii-front.netlify.app"],
+  origin: ["http://localhost:4000","https://project-ii-front.netlify.app"],
   credentials: true
 }
 ))
