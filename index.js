@@ -134,6 +134,14 @@ io.on('connection', function (socket) { // socket = 1 session of user A
       }
     }
   })
+  socket.on('calling', function (newMess, chatId, matchId,callerName) {
+    for (let socketId in onlineUsers) {
+      if (onlineUsers[socketId]._id == matchId) {
+        io.to(socketId).emit('calling', newMess, chatId, matchId,callerName)
+        break;
+      }
+    }
+  })
 
   // when A likes B when B already liked A: 
   // A: Server responds to A that it's a match -> .emit a match + self trigger get ChatList/Match to rerender UI
